@@ -21,7 +21,7 @@ export default function RadioStations() {
     <div className='flex justify-center'>
       <div>
         <h2 className='font-bold text-2xl mb-4'>Select radio station:</h2>
-        <div className='inline-grid gap-5 grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6'>
+        <div className='inline-grid gap-5 grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 mb-6'>
           {radioStations.map((radioStation) => (
             <a
               key={radioStation.id}

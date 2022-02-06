@@ -57,7 +57,7 @@ export default function Songs() {
   }, [apiPath])
 
   return (
-    <div>
+    <div className='pb-6'>
       <div className='flex justify-center'>
         <a
           href='/'
@@ -67,15 +67,14 @@ export default function Songs() {
         </a>
         <input
           onInput={findSongs}
-          className='transition-all rounded-lg py-5 px-12 shadow-lg outline-none dark:bg-gray-800 focus:shadow-xl hover:shadow-xl'
-          style={{ width: 500 }}
+          className='w-60 xs:w-80 sm:w-96 transition-all rounded-lg py-5 px-12 shadow-lg outline-none dark:bg-gray-800 focus:shadow-xl hover:shadow-xl'
           type='text'
           placeholder='Search for a song or artist...'
         />
       </div>
       {songs.length > 0 ? (
         <InfiniteScroll dataLength={songs.length} next={loadSongs} hasMore>
-          <table className='mx-auto mt-12 mb-5'>
+          <table className='mx-auto mt-12'>
             <thead className='py-4'>
               <tr>
                 {headers.map((header) => (
@@ -91,7 +90,7 @@ export default function Songs() {
             <tbody>
               {songs.map((song) => (
                 <tr key={song.id}>
-                  <td className='w-5/12 py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap'>
+                  <td className='w-80 max-w-xs py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap'>
                     <a
                       href={`${
                         import.meta.env.VITE_BACKEND_BASE_URL
@@ -100,22 +99,24 @@ export default function Songs() {
                       )}`}
                       target='_blank'
                       rel='noreferrer'
+                      title={song.title}
                     >
                       {song.title}
                     </a>
                   </td>
-                  <td className='w-5/12 py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap'>
+                  <td className='w-80 max-w-xs py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap'>
                     <a
                       href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
                         song.artist
                       )}`}
                       target='_blank'
                       rel='noreferrer'
+                      title={song.artist}
                     >
                       {song.artist}
                     </a>
                   </td>
-                  <td className='w-2/12 text-center'>
+                  <td className='w-20	text-center'>
                     <span className='bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300'>
                       {song.count}
                     </span>
@@ -126,9 +127,9 @@ export default function Songs() {
           </table>
         </InfiniteScroll>
       ) : (
-        <div className='bg-gray-100 max-w-2xl mx-auto h-56 flex rounded-lg mt-12 mb-5 dark:bg-gray-800'>
+        <div className='bg-gray-100 max-w-2xl mx-auto h-56 flex rounded-lg mt-12 dark:bg-gray-800'>
           <div className='m-auto'>
-            <h1 className='text-2xl font-bold text-center mb-3'>
+            <h1 className='text-2xl font-bold text-center mb-4'>
               Nothing here...
             </h1>
             <p>found songs will be displayed here</p>
