@@ -18,7 +18,8 @@ export default function Songs() {
     const url = new URL(
       `${import.meta.env.VITE_BACKEND_BASE_URL}/api/songs/${
         params.radioStationId
-      }${apiPath}`
+      }${apiPath}`,
+      window.location
     )
     url.searchParams.set('page', page)
 
@@ -92,7 +93,9 @@ export default function Songs() {
                 <tr key={song.id}>
                   <td className='w-5/12 py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap'>
                     <a
-                      href={`http://localhost:8080/youtube-link?search=${encodeURIComponent(
+                      href={`${
+                        import.meta.env.VITE_BACKEND_BASE_URL
+                      }/youtube-link?search=${encodeURIComponent(
                         `${song.title} ${song.artist}`
                       )}`}
                       target='_blank'
