@@ -83,7 +83,7 @@ func getRadioStation(c *gin.Context) (models.RadioStation, error) {
 // getPageNumber returns the selected page number (default 1)
 func getPageNumber(c *gin.Context) int {
 	pageNumber, err := strconv.Atoi(c.Query("page"))
-	if err != nil {
+	if err != nil || pageNumber < 1 {
 		pageNumber = 1
 	}
 	return pageNumber

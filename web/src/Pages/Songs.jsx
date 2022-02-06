@@ -7,19 +7,30 @@ import getImageUrl from '../modules/utils.mjs'
 export default function Songs() {
   const [songs, setSongs] = useState([])
   const [page, setPage] = useState(1)
+  const [apiPath, setApiPath] = useState('')
+
   const params = useParams()
   const headers = ['Title', 'Artist', 'Count']
 
   // Lazy load songs
-  const loadSongs = () => {
+  const loadSongs = (override) => {
+    // Set url
+    const url = new URL(
+      `${import.meta.env.VITE_BACKEND_BASE_URL}/api/songs/${
+        params.radioStationId
+      }${apiPath}`
+    )
+    url.searchParams.set('page', page)
+
+    // Get songs
     axios
-      .get(
-        `${import.meta.env.VITE_BACKEND_BASE_URL}/api/songs/${
-          params.radioStationId
-        }?page=${page}`
-      )
+      .get(url)
       .then((res) => {
-        setSongs(songs.concat(res.data.data))
+        if (override) {
+          setSongs(res.data.data)
+        } else {
+          setSongs(songs.concat(res.data.data))
+        }
         setPage(page + 1)
       })
       .catch((error) => {
@@ -27,20 +38,22 @@ export default function Songs() {
       })
   }
 
-  useEffect(loadSongs, [])
+  const findSongs = (event) => {
+    // Reset page when searching
+    setPage(1)
 
-  // if (songs.length === 0) {
-  //   return (
-  //     <div className='bg-gray-100 max-w-2xl mx-auto h-56 flex rounded-lg'>
-  //       <div className='m-auto'>
-  //         <h1 className='text-2xl font-bold text-center mb-3'>
-  //           Nothing here...
-  //         </h1>
-  //         <p>found songs will be displayed here</p>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+    // Set api path
+    const search = event.target.value
+    if (search !== '') {
+      setApiPath(`/find?search=${encodeURIComponent(search)}`)
+    } else {
+      setApiPath('')
+    }
+  }
+
+  useEffect(() => {
+    loadSongs(true)
+  }, [apiPath])
 
   return (
     <div>
@@ -52,57 +65,73 @@ export default function Songs() {
           <img alt='Radio Station' src={getImageUrl(params.radioStationId)} />
         </a>
         <input
-          // onInput={this.findSong}
+          onInput={findSongs}
           className='transition-all rounded-lg py-5 px-12 shadow-lg outline-none dark:bg-gray-800 focus:shadow-xl hover:shadow-xl'
           style={{ width: 500 }}
           type='text'
           placeholder='Search for a song or artist...'
         />
       </div>
-      <InfiniteScroll dataLength={songs.length} next={loadSongs} hasMore>
-        <table className='mx-auto mt-12 mb-5'>
-          <thead className='py-4'>
-            <tr>
-              {headers.map((header) => (
-                <th className='py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap text-left last:text-center'>
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {songs.map((song) => (
-              <tr key={song.id}>
-                <td className='w-5/12 py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap'>
-                  <a
-                    href={`http://localhost:8080/youtube-link?search=${encodeURIComponent(
-                      `${song.title} ${song.artist}`
-                    )}`}
-                    target='_blank'
-                    rel='noreferrer'
+      {songs.length > 0 ? (
+        <InfiniteScroll dataLength={songs.length} next={loadSongs} hasMore>
+          <table className='mx-auto mt-12 mb-5'>
+            <thead className='py-4'>
+              <tr>
+                {headers.map((header) => (
+                  <th
+                    key={header}
+                    className='py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap text-left last:text-center'
                   >
-                    {song.title}
-                  </a>
-                </td>
-                <td className='w-5/12 py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap'>
-                  <a
-                    href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
-                      song.artist
-                    )}`}
-                  >
-                    {song.artist}
-                  </a>
-                </td>
-                <td className='w-2/12 text-center'>
-                  <span className='bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300'>
-                    {song.count}
-                  </span>
-                </td>
+                    {header}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </InfiniteScroll>
+            </thead>
+            <tbody>
+              {songs.map((song) => (
+                <tr key={song.id}>
+                  <td className='w-5/12 py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap'>
+                    <a
+                      href={`http://localhost:8080/youtube-link?search=${encodeURIComponent(
+                        `${song.title} ${song.artist}`
+                      )}`}
+                      target='_blank'
+                      rel='noreferrer'
+                    >
+                      {song.title}
+                    </a>
+                  </td>
+                  <td className='w-5/12 py-4 px-5 text-ellipsis overflow-hidden whitespace-nowrap'>
+                    <a
+                      href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
+                        song.artist
+                      )}`}
+                      target='_blank'
+                      rel='noreferrer'
+                    >
+                      {song.artist}
+                    </a>
+                  </td>
+                  <td className='w-2/12 text-center'>
+                    <span className='bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300'>
+                      {song.count}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </InfiniteScroll>
+      ) : (
+        <div className='bg-gray-100 max-w-2xl mx-auto h-56 flex rounded-lg mt-12 mb-5 dark:bg-gray-800'>
+          <div className='m-auto'>
+            <h1 className='text-2xl font-bold text-center mb-3'>
+              Nothing here...
+            </h1>
+            <p>found songs will be displayed here</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
