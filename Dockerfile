@@ -16,7 +16,7 @@ RUN npm audit --audit-level moderate
 RUN npm run build
 
 # Package
-FROM alpine:3.15.0
+FROM alpine:3.15.4
 RUN apk update && apk add ca-certificates
 
 COPY --from=base-go /go/bin/radio-list /usr/share/radio-list/radio-list
