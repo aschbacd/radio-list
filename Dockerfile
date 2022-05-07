@@ -6,7 +6,7 @@ WORKDIR /go/src/github.com/aschbacd/radio-list
 RUN go build -a -tags netgo -ldflags '-w' -o /go/bin/radio-list /go/src/github.com/aschbacd/radio-list
 
 # Frontend
-FROM node:17.3.1-alpine3.15 AS base-node
+FROM node:17.9.0-alpine3.15 AS base-node
 COPY . /tmp/radio-list
 WORKDIR /tmp/radio-list
 RUN npm install
